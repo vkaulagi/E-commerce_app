@@ -5,7 +5,7 @@ const customerService = require('../services/customerService');
 // GET all customers
 router.get('/', async (req, res) => {
     try {
-        const customers = await customerService.getAllCustomers();
+        const customers = await customerService.getCustomers();
         res.status(200).json(customers);
     } catch (err) {
         res.status(500).json({ message: err.message });

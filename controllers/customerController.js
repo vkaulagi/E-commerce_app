@@ -16,7 +16,7 @@ exports.getCustomers = (req, res) => {
 
 // Get a customer by id
 exports.getCustomerById = (req, res) => {
-    Customer.getById(req.params.id, (err, customer) => {
+    Customer.findById(req.params.id, (err, customer) => {
         if (err) {
             console.log(err);
             res.status(500).json({

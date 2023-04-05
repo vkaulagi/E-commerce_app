@@ -20,7 +20,7 @@ exports.getBooks = async (req, res) => {
 
 exports.getBook = async (req, res) => {
     try {
-        const book = await Book.findById(req.params.id);
+        const book = await Book.getBookById(req.params.id);
         res.status(200).json({
             status: 'success',
             data: {
@@ -37,7 +37,7 @@ exports.getBook = async (req, res) => {
 
 exports.createBook = async (req, res) => {
     try {
-        const newBook = await Book.create(req.body);
+        const newBook = await Book.createBook(req.body);
         res.status(201).json({
             status: 'success',
             data: {
@@ -54,7 +54,7 @@ exports.createBook = async (req, res) => {
 
 exports.updateBook = async (req, res) => {
     try {
-        const book = await Book.findByIdAndUpdate(req.params.id, req.body, {
+        const book = await Book.updateBookById(req.params.id, req.body, {
             new: true,
             runValidators: true,
         });
@@ -74,7 +74,7 @@ exports.updateBook = async (req, res) => {
 
 exports.deleteBook = async (req, res) => {
     try {
-        await Book.findByIdAndDelete(req.params.id);
+        await Book.deleteBookById(req.params.id);
         res.status(204).json({
             status: 'success',
             data: null,

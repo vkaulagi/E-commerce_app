@@ -1,62 +1,46 @@
-const db = require("../config/database");
+const mysql = require('mysql');
+const util = require('util');
 
-// Get all books
-exports.getBooks = async function () {
-    try {
-        const result = await db.query("SELECT * FROM books");
-        return result;
-    } catch (error) {
-        console.log(error);
-        return null;
-    }
+// create connection pool
+const pool = mysql.createPool({
+    connectionLimit: 10,
+    host: '127.0.0.1',
+    user: 'root',
+    password: '',
+    database: 'bookstore',
+});
+
+// promisify the pool query method
+pool.query = util.promisify(pool.query);
+
+// Book model methods
+const Book = {};
+
+Book.getAllBooks = async () => {
+    const rows = await pool.query('SELECT * FROM books');
+    return rows;
 };
 
-// Get book by id
-exports.getBookById = async function (id) {
-    try {
-        const result = await db.query("SELECT * FROM books WHERE id = ?", [id]);
-        return result;
-    } catch (error) {
-        console.log(error);
-        return null;
-    }
+Book.getBookById = async (id) => {
+    const rows = await pool.query('SELECT * FROM books WHERE id = ?', [id]);
+    return rows[0];
 };
 
-// Create book
-exports.createBook = async function (book) {
-    try {
-        const result = await db.query(
-            "INSERT INTO books (title, author, price) VALUES (?, ?, ?)",
-            [book.title, book.author, book.price]
-        );
-        return result.insertId;
-    } catch (error) {
-        console.log(error);
-        return null;
-    }
+Book.createBook = async (book) => {
+    const { title, author, description } = book;
+    const rows = await pool.query('INSERT INTO books (title, author, description) VALUES (?, ?, ?)', [title, author, description]);
+    return rows.insertId;
 };
 
-// Update book
-exports.updateBook = async function (id, book) {
-    try {
-        const result = await db.query(
-            "UPDATE books SET title = ?, author = ?, price = ? WHERE id = ?",
-            [book.title, book.author, book.price, id]
-        );
-        return result.affectedRows;
-    } catch (error) {
-        console.log(error);
-        return null;
-    }
+Book.updateBookById = async (id, book) => {
+    const { title, author, description } = book;
+    const rows = await pool.query('UPDATE books SET title = ?, author = ?, description = ? WHERE id = ?', [title, author, description, id]);
+    return rows.affectedRows;
 };
 
-// Delete book
-exports.deleteBook = async function (id) {
-    try {
-        const result = await db.query("DELETE FROM books WHERE id = ?", [id]);
-        return result.affectedRows;
-    } catch (error) {
-        console.log(error);
-        return null;
-    }
+Book.deleteBookById = async (id) => {
+    const rows = await pool.query('DELETE FROM books WHERE id = ?', [id]);
+    return rows.affectedRows;
 };
+
+module.exports = Book;
